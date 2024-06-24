@@ -44,7 +44,7 @@ function App() {
       );
       const filteredPosts = response.data
         .filter((post) => userId === "" || post.userId === parseInt(userId))
-        .slice(-20)
+        .slice(-20).reverse()
       setPosts(filteredPosts);
     } catch (error) {
       console.error("Error fetching posts:", error);
