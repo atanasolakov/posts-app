@@ -1,26 +1,17 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import axios from "axios";
 import PostsList from "./components/PostsList";
 import DropdownFilter from "./components/DropdownFilter";
 import PostForm from "./components/PostForm";
 import { Spin } from "antd";
-import { useMemo } from "react";
-import { useCallback } from "react";
 
 function App() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState("");
   const [userIds, setUserIds] = useState([]);
-
-  useEffect(() => {
-    fetchPosts();
-  }, [userId]);
-
-  useEffect(() => {
-    fetchAllPosts();
-  }, []);
+  const [posts, setPosts] = useState([]);
 
   const fetchAllPosts = async () => {
     try {
@@ -31,39 +22,36 @@ function App() {
         ...new Set(response.data.map((post) => post.userId)),
       ];
       setUserIds(uniqueUserIds);
+      setPosts(response.data);
     } catch (error) {
       console.error("Error fetching all posts", error);
-    }
-  };
-
-  const fetchPosts = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        "https://jsonplaceholder.typicode.com/posts"
-      );
-      const filteredPosts = response.data
-        .filter((post) => userId === "" || post.userId === parseInt(userId))
-        .slice(-20).reverse()
-      setPosts(filteredPosts);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchAllPosts();
+  }, []);
+
+  useEffect(() => {
+    if (posts.length > 0) {
+      const filtered = posts
+        .filter((post) => userId === "" || post.userId === parseInt(userId))
+        .sort((a, b) => b.id - a.id)
+        .slice(0, 20);
+      setFilteredPosts(filtered);
+    }
+  }, [posts, userId]);
 
   const handleChange = useCallback((value) => {
     setUserId(value);
   }, []);
 
   const handleAddPost = useCallback((newPost) => {
+    setFilteredPosts((prevPosts) => [newPost, ...prevPosts]);
     setPosts((prevPosts) => [newPost, ...prevPosts]);
   }, []);
-
-    const MemoizedPostsList = useMemo(() => {
-      return React.memo(PostsList);
-    }, []);
 
   return (
     <main className="App">
@@ -80,7 +68,7 @@ function App() {
             <Spin size="large" />
           </div>
         ) : (
-          <MemoizedPostsList posts={posts} />
+          <PostsList posts={filteredPosts} />
         )}
       </div>
     </main>
