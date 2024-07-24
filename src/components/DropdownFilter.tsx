@@ -3,7 +3,8 @@ import { Select } from "antd";
 
 const { Option } = Select;
 
-const DropdownFilter = ({ userIds, onChange }) => {
+const DropdownFilter = ({ userIds, onChange }: any) => {
+  console.log("Dropdown filter");
   return (
     <>
       <Select
@@ -12,7 +13,7 @@ const DropdownFilter = ({ userIds, onChange }) => {
         style={{ width: 200, marginBottom: 20 }}
         allowClear
       >
-        {userIds.map((id) => (
+        {userIds.map((id: any) => (
           <Option key={id} value={id}>
             {id}
           </Option>
@@ -22,4 +23,4 @@ const DropdownFilter = ({ userIds, onChange }) => {
   );
 };
 
-export default DropdownFilter;
+export default React.memo(DropdownFilter);

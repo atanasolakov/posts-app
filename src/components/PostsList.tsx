@@ -1,20 +1,20 @@
 import React from "react";
 import { List } from "antd";
+import { Post } from "../types/types";
 
-function PostList({ posts }) {
-
+function PostList({ posts}: any) {
+console.log("POST LIST");
   
   return (
-    <>
       <List
         itemLayout="vertical"
         size="small"
         pagination={{
           pageSize: 5,
         }}
-        dataSource={posts}
-        renderItem={(post) => (
-          <List.Item key={post.id}>
+        dataSource={posts as Post[]}
+        renderItem={(post: Post) => (
+          <List.Item key={post.id as string}>
             <List.Item.Meta
               title={post.title}
               description={`User ID: ${post.userId}`}
@@ -23,8 +23,7 @@ function PostList({ posts }) {
           </List.Item>
         )}
       />
-      </>
   );
 }
 
-export default PostList;
+export default React.memo(PostList);

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Card } from "antd";
 
-const PostForm = ({ onAddPost }) => {
+const PostForm = ({ onAddPost }:  any) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (values) => {
+  console.log("Post form");
+
+  const handleSubmit = async (values: any) => {
     setLoading(true);
     try {
       const newPost = {
